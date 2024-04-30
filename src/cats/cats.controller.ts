@@ -9,16 +9,19 @@ import {
   Patch,
   Post,
   Put,
-  Req,
   UseFilters,
+  UseInterceptors,
 } from '@nestjs/common';
 import { CatsService } from './cats.service';
-import { Request } from 'express';
-import { HttpExceptionFilter } from '../http-Exception.filter';
+import { HttpExceptionFilter } from '../common/exceptions/http-Exception.filter';
+import { PositiveintPipe } from '../common/pipe/positiveint.pipe';
+import { LoggingInterceptor } from '../common/interceptors/logging.interception';
 
 // nest js cli를 이용한 controller 만들기
 // nest g co controller-name
 @Controller('cats')
+@UseInterceptors(new LoggingInterceptor())
+@UseFilters(HttpExceptionFilter) // 해당 controller 제외하고는 filter 처리가 되지 않음
 export class CatsController {
   constructor(private readonly catsService: CatsService) {}
 
@@ -33,7 +36,8 @@ export class CatsController {
 
   @Get(':id')
   // pipe를 이용해서 변환 및 유효성 검사
-  getCat(@Param('id', ParseIntPipe) param: number) {
+  getCat(@Param('id', ParseIntPipe, PositiveintPipe) param: number) {
+    console.log(param)
     return 'one cat';
   }
   @Post()
