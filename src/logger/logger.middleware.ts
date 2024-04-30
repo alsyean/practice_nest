@@ -10,10 +10,11 @@ export class LoggerMiddleware implements NestMiddleware {
   use = (req: Request, res: Response, next: NextFunction) => {
     // nest js logger 사용법
     // this.logger.log(req.ip, req.method, req.originalUrl);
-
     // 응답 받고 log 출력
     res.on('finish', () => {
-      this.logger.log(`${req.ip}, ${req.method}, ${res.statusCode}, ${req.originalUrl}`);
+      this.logger.log(
+        `${req.ip}, ${req.method}, ${res.statusCode}, ${req.originalUrl}`,
+      );
     });
     next();
   };
