@@ -12,6 +12,8 @@ import { LoggingInterceptor } from '../common/interceptors/logging.interception'
 import { CatRequestDto } from './dto/cat.request.dto';
 import { ApiOperation, ApiResponse } from "@nestjs/swagger";
 import { ReadOnlyCatDto } from "./dto/cat.dto";
+import { AuthService } from "../auth/auth.service";
+import { LoginRequestDto } from "../auth/dto/login.dto";
 
 // nest js cli를 이용한 controller 만들기
 // nest g co controller-name
@@ -19,7 +21,10 @@ import { ReadOnlyCatDto } from "./dto/cat.dto";
 @UseInterceptors(new LoggingInterceptor())
 @UseFilters(HttpExceptionFilter) // 해당 controller 제외하고는 filter 처리가 되지 않음
 export class CatsController {
-  constructor(private readonly catsService: CatsService) {}
+  constructor(
+    private readonly catsService: CatsService,
+    private readonly authService: AuthService,
+  ) {}
 
   @Get()
   getCurrentCat() {
@@ -42,8 +47,8 @@ export class CatsController {
   }
 
   @Post('login')
-  logIn() {
-    return 'login';
+  logIn(@Body() body: LoginRequestDto) {
+    return this.authService.jwtLogin(body);
   }
 
   @Post('logout')
