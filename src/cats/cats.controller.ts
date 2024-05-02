@@ -4,16 +4,19 @@ import {
   Get,
   Post,
   UseFilters,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { CatsService } from './cats.service';
 import { HttpExceptionFilter } from '../common/exceptions/http-Exception.filter';
 import { LoggingInterceptor } from '../common/interceptors/logging.interception';
 import { CatRequestDto } from './dto/cat.request.dto';
-import { ApiOperation, ApiResponse } from "@nestjs/swagger";
-import { ReadOnlyCatDto } from "./dto/cat.dto";
-import { AuthService } from "../auth/auth.service";
-import { LoginRequestDto } from "../auth/dto/login.dto";
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ReadOnlyCatDto } from './dto/cat.dto';
+import { AuthService } from '../auth/auth.service';
+import { LoginRequestDto } from '../auth/dto/login.dto';
+import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
+import { CurrentUser } from '../common/decorators/user.decorator';
 
 // nest js cli를 이용한 controller 만들기
 // nest g co controller-name
@@ -27,8 +30,9 @@ export class CatsController {
   ) {}
 
   @Get()
-  getCurrentCat() {
-    return 'current cat';
+  @UseGuards(JwtAuthGuard)
+  getCurrentCat(@CurrentUser() cat) {
+    return cat;
   }
 
   @ApiOperation({ summary: 'sign up' })

@@ -3,7 +3,9 @@ import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/exceptions/http-Exception.filter';
 import * as dotenv from 'dotenv';
 import { ValidationPipe } from '@nestjs/common';
-import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as expressBasicAuth from 'express-basic-auth';
+import * as process from 'process';
 
 async function bootstrap() {
   dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
@@ -13,6 +15,15 @@ async function bootstrap() {
   });
   // cors 설정
   app.enableCors();
+  app.use(
+    ['/docs/**', '/docs-json', '/api'],
+    expressBasicAuth({
+      challenge: true,
+      users: {
+        [process.env.SWAGGER_USER]: process.env.SWAGGER_PASSWORD,
+      },
+    }),
+  );
   // swagger 설정
   const config = new DocumentBuilder()
     .setTitle('Cats example')
@@ -21,7 +32,8 @@ async function bootstrap() {
     .addTag('cats')
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('/docs/api', app, document);
+
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new HttpExceptionFilter());
   await app.listen(process.env.PORT);
