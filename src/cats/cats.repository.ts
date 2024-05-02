@@ -3,6 +3,7 @@ import { Model } from 'mongoose';
 import { Cat } from './cat.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { CatRequestDto } from './dto/cat.request.dto';
+import * as process from 'process';
 
 @Injectable()
 export class CatsRepository {
@@ -30,4 +31,16 @@ export class CatsRepository {
     const cat = await this.catModel.findById(id).select('-password');
     return cat;
   }
+
+  async findByIdAndUpdateImg(id: string, fileName: string) {
+    const cat = await this.catModel.findById(id);
+
+    cat.img_url = `http://localhost:${process.env.PORT}/media/${fileName}`;
+
+    const newCat = await cat.save();
+
+    console.log(newCat);
+    return newCat.readOnlyData;
+  }
+
 }

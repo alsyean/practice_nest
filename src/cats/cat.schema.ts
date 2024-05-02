@@ -57,11 +57,14 @@ export class Cat extends Document {
     description: 'image url',
     required: true,
   })
-  @Prop()
+  @Prop({
+    default:
+      'https://github.com/amamov/NestJS-solid-restapi-boilerplate/raw/main/docs/images/1.jpeg',
+  })
   @IsEmpty()
   img_url: string;
 
-  readonly readOnlyData: { id: string; email: string; name: string };
+  readonly readOnlyData: { id: string; email: string; name: string; img_url: string };
 }
 
 export const CatSchema = SchemaFactory.createForClass(Cat);
@@ -71,5 +74,6 @@ CatSchema.virtual('readOnlyData').get(function (this: Cat) {
     id: this.id,
     email: this.email,
     name: this.name,
+    img_url: this.img_url,
   };
 });

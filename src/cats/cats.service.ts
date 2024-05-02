@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { CatRequestDto } from './dto/cat.request.dto';
 import * as bcrypt from 'bcrypt';
 import { CatsRepository } from './cats.repository';
+import { Cat } from "./cat.schema";
 
 // nest js cli를 이용한 service 만들기
 // nest g service service-name
@@ -28,5 +29,32 @@ export class CatsService {
     });
 
     return cat.readOnlyData;
+  }
+
+  async uploadImg(cat: Cat, files: Express.Multer.File) {
+    console.log(`file : ${JSON.stringify(files)}`);
+    const fileName = `cats/${files.filename}`;
+
+    console.log(fileName);
+
+    const newCat = await this.catsRepository.findByIdAndUpdateImg(
+      cat.id,
+      fileName,
+    );
+    console.log(newCat);
+    return newCat;
+  }
+
+  async uploadsImg(cat: Cat, files: Express.Multer.File[]) {
+    const fileName = `cats/${files[0].filename}`;
+
+    console.log(fileName);
+
+    const newCat = await this.catsRepository.findByIdAndUpdateImg(
+      cat.id,
+      fileName,
+    );
+    console.log(newCat);
+    return newCat;
   }
 }
