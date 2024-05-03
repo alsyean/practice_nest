@@ -11,6 +11,11 @@ export class CatsService {
   private _body: CatRequestDto;
   constructor(private readonly catsRepository: CatsRepository) {}
 
+  async getCatsAll() {
+    const cats = await this.catsRepository.getCatsAll();
+    return cats;
+  }
+
   async signUp(body: CatRequestDto) {
     const { email, name, password } = body;
 

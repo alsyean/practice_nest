@@ -9,6 +9,12 @@ import * as process from 'process';
 export class CatsRepository {
   constructor(@InjectModel(Cat.name) private readonly catModel: Model<Cat>) {}
 
+  async getCatsAll() {
+    const cats = await this.catModel.find();
+    const result = cats.map((cat) => cat.readOnlyData);
+    return result;
+  }
+
   async existsByEmail(email: string): Promise<boolean> {
     const exist_id = await this.catModel.exists({ email });
     let result: boolean = true;
